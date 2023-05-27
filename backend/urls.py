@@ -12,4 +12,5 @@ urlpatterns = [
          name='token_refresh'),
     path('', include('user.urls')),
     path('question/', include('question.urls')),
+    path('concepts/', include('concept.urls')),
 ]
