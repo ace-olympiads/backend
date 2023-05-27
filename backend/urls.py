@@ -11,4 +11,5 @@ urlpatterns = [
          jwt_views.TokenRefreshView.as_view(),
          name='token_refresh'),
     path('', include('user.urls')),
+    path('question/', include('question.urls')),
 ]

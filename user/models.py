@@ -11,25 +11,43 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractBaseUser):
-    email = models.EmailField(unique=True)
-    username = models.CharField(max_length=30, unique=True, blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    ROLES = (
+        ('A', 'Admin'),
+        ('M', 'Manager'),
+        ('P', 'Premium User'),
+        ('G', 'General User'),
+    )
+    role = models.CharField(max_length=1, choices=ROLES, default='G')
+    email = models.EmailField(verbose_name='Email Address', max_length=255, unique=True, db_index=True)
+    name = models.CharField(max_length=50, verbose_name="Name")
+    contact_no = models.CharField(max_length=10, verbose_name="Contact Number", null=True, blank=True)
+    image = models.ImageField(upload_to='users', blank=True, null=True)
     is_superuser = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_staff = models.BooleanField(
+        verbose_name='Staff Status',
+        default=False,
+        help_text='Designates whether the user can log into admin site.',
+    )
 
+    is_active = models.BooleanField(
+        verbose_name='Active',
+        default=True,
+        help_text='Designates whether this user should be treated as active. '
+                  'Unselect this instead of deleting accounts.',
+    )
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['name', 'contact_no', 'email']
 
     def __str__(self):
         return self.email
@@ -47,14 +65,3 @@ class RefreshToken(models.Model):
 
     def __str__(self):
         return f"{self.user.email}'s Refresh Token"
-
-class Question(models.Model):
-    question_text = models.CharField(max_length=200)
-    video_solution_url = models.URLField(null=True, blank=True)
-    text_solution = models.TextField(null=True, blank=True)
-    text_solution_latex = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.question_text
