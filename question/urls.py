@@ -1,9 +1,7 @@
 from django.urls import path
-
-from .views import AddQuestionView, QuestionDetailView, QuestionListAPIView
+from .views import QuestionListCreateView, QuestionRetrieveUpdateDestroyView
 
 urlpatterns = [
-    path('add/', AddQuestionView.as_view(), name='add_question'),
-    path('<int:pk>/', QuestionDetailView.as_view(), name='question_detail'),
-    path('questions/', QuestionListAPIView.as_view(), name='question_list'),
+    path('', QuestionListCreateView.as_view(), name='question-list-create'),
+    path('<int:question_id>/', QuestionRetrieveUpdateDestroyView.as_view(), name='question-retrieve-update-destroy'),
 ]
