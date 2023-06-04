@@ -4,6 +4,7 @@ from rest_framework import status
 from .models import Concept, Video
 from .serializers import ConceptSerializer, VideoSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 
 class ConceptListCreateView(APIView):
     def get(self, request):
@@ -79,3 +80,21 @@ class VideoRetrieveUpdateDestroyView(APIView):
         video.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class AddRecentlyVisitedVideosView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        video_id = request.data.get('video_id')
+        user.add_recently_visited_concept_videos(video_id)
+        return Response({'message': 'Recently visited concept video added'})
+
+class RecentlyVisitedVideosView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        video_ids = user.recently_visited_concept_videos
+        videos = Video.objects.filter(id__in=video_ids)
+        serialized_videos = [video.to_json() for video in videos]
+        return Response({'recently_visited_concept_videos': serialized_videos})

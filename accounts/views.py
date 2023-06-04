@@ -83,12 +83,9 @@ class SignUpView(generics.GenericAPIView):
                             return Response(data={"message": "Invalid email or password"})
                     else:
                         print("Please enter your google account")
-                        userdet = User.objects.get(email=email)
-                        serializer= UserSerializer(userdet)
-                        print(userdet)
-                        user=authenticate(email=email, password="ommthegreat")
+                        user = User.objects.get(email=email)
+                        serializer= UserSerializer(user)
                         tokens = create_jwt_pair_for_user(user)
-
                         response = {"user": serializer.data,"tokens":tokens}
                         return Response(data=response, status=status.HTTP_200_OK)
 

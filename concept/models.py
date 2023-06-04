@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import User
 
 class Concept(models.Model):
     title = models.CharField(max_length=255)
@@ -12,7 +13,7 @@ class Video(models.Model):
     title = models.CharField(max_length=255)
     youtube_url = models.URLField()
     thumbnail_url = models.URLField()
-    author = models.CharField(max_length=255)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.title

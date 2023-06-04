@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from datetime import timedelta
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -35,20 +36,15 @@ SECRET_KEY = 'django-insecure-)42=a8)toyh=7$x2@x5lyn*&%jdy4u@tbu-1v-z9trcgj)%1xu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+CORS_ALLOW_CREDENTIALS = True
 
-ALLOWED_HOSTS=['http://localhost:3000','127.0.0.1']
-
-               
-
-CORS_ORIGIN_ALLOW_ALL = False
-
-CORS_ORIGIN_WHITELIST = (
-
-        'http://localhost:3000',
-        'http://127.0.0.1:8000'
-)
-
-# Application definition
+CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS = [
+        "http://127.0.0.1:3000",
+        "http://localhost:3000",
+        "http://127.0.0.1:8000",
+        "http://localhost:8000",
+    ]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -101,10 +97,18 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'dev': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
+    'production': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': os.environ['HOST'],
+        'NAME': os.environ['NAME'],
+        'USER': os.environ['USER'],
+        'PASSWORD': os.environ['PASSWORD'],
+        'PORT': os.environ['PORT'],
+    },
 }
 
 AUTH_USER_MODEL = 'accounts.User'

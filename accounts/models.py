@@ -1,6 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 
@@ -28,6 +29,8 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email=email, password=password, **extra_fields)
 
+def default_array():
+    return list([0, 0])
 
 class User(AbstractUser):
     ROLES = (
@@ -54,7 +57,7 @@ class User(AbstractUser):
     scope=models.CharField(default="",blank=True,max_length=30)
     id_token=models.CharField(default="",blank=True,max_length=30)
     session_state=models.CharField(default="",blank=True,max_length=30)
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['name']
     is_staff = models.BooleanField(
         verbose_name='Staff Status',
@@ -68,6 +71,23 @@ class User(AbstractUser):
         help_text='Designates whether this user should be treated as active. '
                   'Unselect this instead of deleting accounts.',
     )
+    recently_visited_questions = ArrayField(models.IntegerField(), default=[0, 0], blank=True, null=True)
+    recently_visited_concept_videos = ArrayField(models.IntegerField(), default=[0, 0], blank=True, )
+
+    def add_recently_visited_question(self, question_id):
+        if question_id in self.recently_visited_questions:
+            self.recently_visited_questions.remove(question_id)
+        self.recently_visited_questions.insert(0, question_id)
+        self.recently_visited_questions = self.recently_visited_questions[:10]
+        self.save()
+    
+    def add_recently_visited_concept_videos(self, video_id):
+        if video_id in self.recently_visited_concept_videos:
+            self.recently_visited_concept_videos.remove(video_id)
+        self.recently_visited_concept_videos.insert(0, video_id)
+        self.recently_visited_concept_videos = self.recently_visited_concept_videos[:10]
+        self.save()
+
     def __str__(self):
         return self.email
 

@@ -1,6 +1,6 @@
 from django.db import models
 from concept.models import Concept
-from django.contrib.auth.models import User
+from accounts.models import User
 
 class Question(models.Model):
     CATEGORY_CHOICES = (
