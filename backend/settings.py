@@ -13,20 +13,26 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
-		'rest_framework_simplejwt.authentication.JWTAuthentication',
+		'rest_framework.permissions.AllowAny',
 	],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+
+        # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',  # django-oauth-toolkit < 1.0.0
+        # django-oauth-toolkit >= 1.0.0
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'drf_social_oauth2.authentication.SocialAuthentication',
+    ),
 }
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-}
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -53,10 +59,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users',
+    'oauth2_provider',
+    'social_django',
+    'drf_social_oauth2',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
-    'accounts',
     'question',
     'concept'
 ]
@@ -85,10 +94,27 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+AUTHENTICATION_BACKENDS = (
+    # Others auth providers (e.g. Google, OpenId, etc)
+    'social_core.backends.google.GoogleOAuth2',
+    # Facebook OAuth2
+    'social_core.backends.facebook.FacebookAppOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+
+    # drf_social_oauth2
+    'drf_social_oauth2.backends.DjangoOAuth2',
+
+    # Django
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
@@ -110,8 +136,9 @@ DATABASES = {
         'PORT': os.environ['PORT'],
     },
 }
+DATABASES['default'] = DATABASES['dev' if DEBUG else 'production']
 
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'users.NewUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -153,3 +180,29 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Facebook configuration
+SOCIAL_AUTH_FACEBOOK_KEY = ('599062051942492')
+SOCIAL_AUTH_FACEBOOK_SECRET = ('0d98b7e3dc33a69dab4ced881035743f')
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://localhost:3000/'
+
+# Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
+# Email is not sent by default, to get it, you must request the email permission.
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email'
+}
+SOCIAL_AUTH_USER_FIELDS = ['email', 'username', 'first_name', 'password']
+
+# Google configuration
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "925811961336-48vhc90jdosidnv4vg3bt83r07i345jg.apps.googleusercontent.com"
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "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"
+
+# Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+
+#id bv0hp8XJPQLamXPbjBdnYg0VfxMBwK1ybK8nk3vF
+#secret 7vp0V0QTzhBNQHksl35eUNkDvCSwvc9h1bff4ZV3giPNjpKw8PCfhWmKZB4TIOtxaRwnzV5Hnfz5DUAjxLqNF0VmOpZ4evi7EwywUZ033veKYuIAk9EDDsOvchgXeQAU

@@ -4,13 +4,9 @@ from rest_framework_simplejwt import views as jwt_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/token/',
-         jwt_views.TokenObtainPairView.as_view(),
-         name='token_obtain_pair'),
-    path('api/token/refresh/',
-         jwt_views.TokenRefreshView.as_view(),
-         name='token_refresh'),
-    path('', include('accounts.urls')),
-    path('questions/', include('question.urls')),
+    path('auth/', include('drf_social_oauth2.urls', namespace='drf')),
+
+    path('question/', include('question.urls')),
+    path('users/', include('users.urls')),
     path('concepts/', include('concept.urls')),
 ]

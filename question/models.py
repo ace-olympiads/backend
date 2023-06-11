@@ -1,6 +1,6 @@
 from django.db import models
 from concept.models import Concept
-from accounts.models import User
+from users.models import Account
 
 class Question(models.Model):
     CATEGORY_CHOICES = (
@@ -16,7 +16,7 @@ class Question(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     category = models.CharField(max_length=1, choices=CATEGORY_CHOICES, default='G')
     concept = models.ForeignKey(Concept, on_delete=models.CASCADE, related_name='questions', blank=True, null=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.question_text
