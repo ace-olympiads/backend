@@ -53,7 +53,7 @@ CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS = [
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    'django.contrib.admin',             
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -64,7 +64,6 @@ INSTALLED_APPS = [
     'social_django',
     'drf_social_oauth2',
     'rest_framework',
-    'rest_framework_simplejwt',
     'rest_framework.authtoken',
     'question',
     'concept'
@@ -126,15 +125,7 @@ DATABASES = {
     'dev': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    },
-    'production': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': os.environ['HOST'],
-        'NAME': os.environ['NAME'],
-        'USER': os.environ['USER'],
-        'PASSWORD': os.environ['PASSWORD'],
-        'PORT': os.environ['PORT'],
-    },
+    }
 }
 DATABASES['default'] = DATABASES['dev' if DEBUG else 'production']
 
@@ -204,5 +195,5 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.profile',
 ]
 
-#id bv0hp8XJPQLamXPbjBdnYg0VfxMBwK1ybK8nk3vF
-#secret 7vp0V0QTzhBNQHksl35eUNkDvCSwvc9h1bff4ZV3giPNjpKw8PCfhWmKZB4TIOtxaRwnzV5Hnfz5DUAjxLqNF0VmOpZ4evi7EwywUZ033veKYuIAk9EDDsOvchgXeQAU
+#id aCNFbch4tysCnfeVKdAt761T9KCRLDlt5QZTz0Xh
+#secret 8h8ctJdTBKyPDrKvylivr6plvLU3Ex0gJXchaC5TxnIgOv9w3T45EZl0V3pgHmn8Alf8U78fpr0nT97ufQptrGzvCdKk4NYaiPPSliPKlC2D7AvAFgrYRazzXVbIccqu
