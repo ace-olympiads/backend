@@ -64,7 +64,7 @@ class Account(models.Model):
     email = models.EmailField(verbose_name='Email Address', max_length=255, unique=True, db_index=True)
     username = models.CharField(max_length=50, verbose_name="Name")
     contact_no = models.CharField(max_length=10, verbose_name="Contact Number", default="", blank=True)
-    image = models.CharField(max_length=400, verbose_name="Image")
+    image = models.CharField(max_length=400, verbose_name="Image",null=True, blank=True)
     is_superuser = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,)
     updated_at = models.DateTimeField(auto_now=True)

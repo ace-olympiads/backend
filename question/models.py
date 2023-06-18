@@ -20,3 +20,15 @@ class Question(models.Model):
 
     def __str__(self):
         return self.question_text
+    
+
+class Comment(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE,related_name="comments")
+    commenter = models.CharField(max_length=50)
+    email= models.EmailField()
+    content= models.TextField()
+    published_at= models.DateTimeField(auto_now_add=True)
+    status= models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.commenter

@@ -20,6 +20,7 @@ class CustomUserCreate(APIView):
 class CustomAccountCreate(APIView):
 
     def post(self, request, *args, **kwargs):
+        print(request.data)
         serializer=AccountsSerializer(data=request.data)
         if serializer.is_valid():
             accounts = serializer.save()
