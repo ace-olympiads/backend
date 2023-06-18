@@ -63,6 +63,12 @@ class VideoRetrieveUpdateDestroyView(APIView):
     def get(self, request, concept_id, video_id):
         video = self.get_video(concept_id, video_id)
         serializer = VideoSerializer(video)
+        if request.user.is_authenticated:
+            request.user.last_viewed_concept_videos.add(video)
+            if request.user.last_viewed_concept_videos.count() > 10:
+                request.user.last_viewed_concept_videos.remove(
+                    request.user.last_viewed_concept_videos.earliest('created_at')
+                )
         return Response(serializer.data)
 
     def put(self, request, concept_id, video_id):
@@ -79,22 +85,3 @@ class VideoRetrieveUpdateDestroyView(APIView):
         video = self.get_video(concept_id, video_id)
         video.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-class AddRecentlyVisitedVideosView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        user = request.user
-        video_id = request.data.get('video_id')
-        user.add_recently_visited_concept_videos(video_id)
-        return Response({'message': 'Recently visited concept video added'})
-
-class RecentlyVisitedVideosView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        video_ids = user.recently_visited_concept_videos
-        videos = Video.objects.filter(id__in=video_ids)
-        serialized_videos = [video.to_json() for video in videos]
-        return Response({'recently_visited_concept_videos': serialized_videos})

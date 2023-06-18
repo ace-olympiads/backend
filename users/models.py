@@ -74,6 +74,8 @@ class Account(models.Model):
     expires_at=models.IntegerField(null=True,blank=True)
     id_token=models.CharField(default="",blank=True,max_length=30)
     session_state=models.CharField(default="",blank=True,max_length=30)
+    last_viewed_questions = models.ManyToManyField('question.Question', blank=True)
+    last_viewed_concept_videos = models.ManyToManyField('concept.Video', blank=True)
     REQUIRED_FIELDS = ['username','email']
     is_staff = models.BooleanField(
         verbose_name='Staff Status',

@@ -4,7 +4,6 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Question,Comment
 from .serializers import QuestionSerializer, CommentSerializer
-from rest_framework.permissions import IsAuthenticated
 
 class QuestionListCreateView(APIView):
     serializer_class = QuestionSerializer
@@ -29,6 +28,12 @@ class QuestionRetrieveUpdateDestroyView(APIView):
     def get(self, request, question_id):
         question = get_object_or_404(Question, pk=question_id)
         serializer = self.serializer_class(question)
+        if request.user.is_authenticated:
+            request.user.last_viewed_questions.add(question)
+            if request.user.last_viewed_questions.count() > 10:
+                request.user.last_viewed_questions.remove(
+                    request.user.last_viewed_questions.earliest('created_at')
+                )
         return Response(serializer.data)
 
     def put(self, request, question_id):
@@ -45,25 +50,6 @@ class QuestionRetrieveUpdateDestroyView(APIView):
         question = get_object_or_404(Question, pk=question_id)
         question.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-class AddRecentlyVisitedQuestionView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        user = request.user
-        question_id = request.data.get('question_id')
-        user.add_recently_visited_question(question_id)
-        return Response({'message': 'Recently visited question added'})
-    
-class RecentlyVisitedQuestionsView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        question_ids = user.recently_visited_questions
-        questions = Question.objects.filter(id__in=question_ids)
-        serialized_questions = [question.to_json() for question in questions]
-        return Response({'recently_visited_questions': serialized_questions})
     
 
 class CommentsView(APIView):
