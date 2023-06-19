@@ -4,6 +4,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Question,Comment, Tag
 from .serializers import QuestionSerializer, CommentSerializer
+from django.db.models import Q
 
 class QuestionListCreateView(APIView):
     serializer_class = QuestionSerializer
@@ -82,3 +83,24 @@ class QuestionByTagView(APIView):
         questions = Question.objects.filter(tags=tag)
         serializer = QuestionSerializer(questions, many=True)
         return Response(serializer.data)
+    
+class SearchAPIView(APIView):
+    def get(self, request):
+        query = request.query_params.get('query', '')
+        results = self.search(query)
+        return Response(results)
+
+    def search(self, query):
+        results = []
+        if query:
+            search_results = Question.objects.filter(
+                Q(question_text__icontains=query) | Q(text_solution__icontains=query)
+            )
+            for question in search_results:
+                result = {
+                    'id': question.id,
+                    'title': question.question_text,
+                    'solution': question.text_solution
+                }
+                results.append(result)
+        return results
