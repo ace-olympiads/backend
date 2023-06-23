@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Question,Comment, Tag
-from .serializers import QuestionSerializer, CommentSerializer
+from .serializers import QuestionSerializer, CommentSerializer, TagSerializer
 from django.db.models import Q
 
 class QuestionListCreateView(APIView):
@@ -73,6 +73,12 @@ class CommentsView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class TagListAPIView(APIView):
+    def get(self, request):
+        tags = Tag.objects.all()
+        serializer = TagSerializer(tags, many=True)
+        return Response(serializer.data)
+
 class QuestionByTagView(APIView):
     def get(self, request, tag_id):
         try:
