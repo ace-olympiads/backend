@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+
+from users.models import Account
 from .models import Question,Comment, Tag
 from .serializers import QuestionSerializer, CommentSerializer, TagSerializer
 from django.db.models import Q
@@ -31,11 +33,14 @@ class QuestionRetrieveUpdateDestroyView(APIView):
     def get(self, request, question_id):
         question = get_object_or_404(Question, pk=question_id)
         serializer = self.serializer_class(question)
-        if request.user.is_authenticated:
-            request.user.last_viewed_questions.add(question)
-            if request.user.last_viewed_questions.count() > 10:
-                request.user.last_viewed_questions.remove(
-                    request.user.last_viewed_questions.earliest('created_at')
+        email = request.data.get('email')
+        if email:
+            user = get_object_or_404(Account, email=email)
+            user.last_viewed_questions.add(question)
+            
+            if user.last_viewed_questions.count() > 10:
+                user.last_viewed_questions.remove(
+                    user.last_viewed_questions.earliest('created_at')
                 )
         return Response(serializer.data)
 

@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from users.models import Account
 from .models import Concept, Video
 from .serializers import ConceptSerializer, VideoSerializer
 from django.shortcuts import get_object_or_404
@@ -63,11 +65,13 @@ class VideoRetrieveUpdateDestroyView(APIView):
     def get(self, request, concept_id, video_id):
         video = self.get_video(concept_id, video_id)
         serializer = VideoSerializer(video)
-        if request.user.is_authenticated:
-            request.user.last_viewed_concept_videos.add(video)
-            if request.user.last_viewed_concept_videos.count() > 10:
-                request.user.last_viewed_concept_videos.remove(
-                    request.user.last_viewed_concept_videos.earliest('created_at')
+        email = request.data.get('email')
+        if email:
+            user = get_object_or_404(Account, email=email)
+            user.last_viewed_concept_videos.add(video)
+            if user.last_viewed_concept_videos.count() > 10:
+                user.last_viewed_concept_videos.remove(
+                    user.last_viewed_concept_videos.earliest('created_at')
                 )
         return Response(serializer.data)
 
