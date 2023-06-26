@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from .models import Question,Comment, Tag
 
+from users.models import Account
+from .models import Question,Comment, Tag
+from users.serializers import AccountsSerializer
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
@@ -37,7 +39,17 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    question = QuestionSerializer()
+    commenter = AccountsSerializer()
     class Meta:
         model= Comment
         fields = '__all__'
 
+
+class CommentPostSerializer(serializers.ModelSerializer):
+    question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
+    commenter = serializers.PrimaryKeyRelatedField(queryset=Account.objects.all())
+
+    class Meta:
+        model = Comment
+        fields = ['question', 'commenter', 'email', 'content', 'status']

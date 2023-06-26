@@ -32,7 +32,7 @@ class Question(models.Model):
 
 class Comment(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE,related_name="comments")
-    commenter = models.CharField(max_length=50)
+    commenter = models.ForeignKey(Account, on_delete=models.CASCADE,related_name="comments")
     email= models.EmailField()
     content= models.TextField()
     published_at= models.DateTimeField(auto_now_add=True)

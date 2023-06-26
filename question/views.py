@@ -4,9 +4,10 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 
 from users.models import Account
-from .models import Question,Comment, Tag
-from .serializers import QuestionSerializer, CommentSerializer, TagSerializer
+from .models import Question, Comment, Tag
+from .serializers import CommentPostSerializer, QuestionSerializer, CommentSerializer, TagSerializer
 from django.db.models import Q
+
 
 class QuestionListCreateView(APIView):
     serializer_class = QuestionSerializer
@@ -23,9 +24,11 @@ class QuestionListCreateView(APIView):
         if serializer.is_valid():
             question = serializer.save()
             serialized_data = serializer.data
-            serialized_data['tags'] = list(question.tags.values_list('name', flat=True))
+            serialized_data['tags'] = list(
+                question.tags.values_list('name', flat=True))
             return Response(serialized_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class QuestionRetrieveUpdateDestroyView(APIView):
     serializer_class = QuestionSerializer
@@ -37,7 +40,7 @@ class QuestionRetrieveUpdateDestroyView(APIView):
         if email:
             user = get_object_or_404(Account, email=email)
             user.last_viewed_questions.add(question)
-            
+
             if user.last_viewed_questions.count() > 10:
                 user.last_viewed_questions.remove(
                     user.last_viewed_questions.earliest('created_at')
@@ -58,31 +61,31 @@ class QuestionRetrieveUpdateDestroyView(APIView):
         question = get_object_or_404(Question, pk=question_id)
         question.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
 
 class CommentsView(APIView):
     serializer_class = CommentSerializer
 
     def get(self, request, id):
-        comments = Comment.objects.filter(question=id).order_by('id')
+        comments = Comment.objects.select_related(
+            'commenter').all().filter(question=id).order_by('id')
         serializer = self.serializer_class(comments, many=True)
         return Response(serializer.data)
 
-
-    def post(self, request):
-        data = request.data
-        print(data)
-        serializer = self.serializer_class(data=data)
+    def post(self, request, format=None):
+        serializer = CommentPostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 class TagListAPIView(APIView):
     def get(self, request):
         tags = Tag.objects.all()
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
+
 
 class QuestionByTagView(APIView):
     def get(self, request, tag_id):
@@ -90,11 +93,12 @@ class QuestionByTagView(APIView):
             tag = Tag.objects.get(id=tag_id)
         except Tag.DoesNotExist:
             return Response({"error": "Tag not found"}, status=404)
-        
+
         questions = Question.objects.filter(tags=tag)
         serializer = QuestionSerializer(questions, many=True)
         return Response(serializer.data)
-    
+
+
 class SearchAPIView(APIView):
     def get(self, request):
         query = request.query_params.get('query', '')
@@ -105,7 +109,8 @@ class SearchAPIView(APIView):
         results = []
         if query:
             search_results = Question.objects.filter(
-                Q(question_text__icontains=query) | Q(text_solution__icontains=query)
+                Q(question_text__icontains=query) | Q(
+                    text_solution__icontains=query)
             )
             for question in search_results:
                 result = {
