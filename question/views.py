@@ -4,8 +4,8 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 
 from users.models import Account
-from .models import Question, Comment, Tag
-from .serializers import CommentPostSerializer, QuestionSerializer, CommentSerializer, TagSerializer
+from .models import Examination, Question, Comment, Tag
+from .serializers import CommentPostSerializer, ExaminationSerializer, QuestionSerializer, CommentSerializer, TagSerializer
 from django.db.models import Q
 
 
@@ -120,3 +120,30 @@ class SearchAPIView(APIView):
                 }
                 results.append(result)
         return results
+
+class ExaminationListAPIView(APIView):
+    def get(self, request):
+        examinations = Examination.objects.all()
+        serializer = ExaminationSerializer(examinations, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ExaminationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ExaminationDetailAPIView(APIView):
+    def get(self, request, pk):
+        examination = Examination.objects.get(pk=pk)
+        serializer = ExaminationSerializer(examination)
+        
+        questions = examination.question_set.all()
+        question_serializer = QuestionSerializer(questions, many=True)
+        
+        response_data = {
+            'examination': serializer.data,
+            'questions': question_serializer.data,
+        }
+        return Response(response_data)

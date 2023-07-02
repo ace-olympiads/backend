@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from users.models import Account
-from .models import Question,Comment, Tag
+from .models import Examination, Question,Comment, Tag
 from users.serializers import AccountsSerializer
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -53,3 +53,8 @@ class CommentPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['question', 'commenter', 'email', 'content', 'status']
+
+class ExaminationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Examination
+        fields = '__all__'

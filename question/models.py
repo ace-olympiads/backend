@@ -9,6 +9,13 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+class Examination(models.Model):
+    slug = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=300, unique=True)
+
+    def __str__(self):
+        return self.name
+
 class Question(models.Model):
     CATEGORY_CHOICES = (
         ('P', 'Premium User'),
@@ -25,6 +32,7 @@ class Question(models.Model):
     concept = models.ForeignKey(Concept, on_delete=models.CASCADE, related_name='questions', blank=True, null=True)
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag)
+    exam = models.ManyToManyField(Examination)
 
     def __str__(self):
         return self.question_text
