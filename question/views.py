@@ -127,23 +127,13 @@ class ExaminationListAPIView(APIView):
         serializer = ExaminationSerializer(examinations, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
-        serializer = ExaminationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class QuestionByExaminationView(APIView):
+    def get(self, request, examination_id):
+        try:
+            examination = Examination.objects.get(id=examination_id)
+        except Examination.DoesNotExist:
+            return Response({"error": "Examination not found"}, status=404)
 
-class ExaminationDetailAPIView(APIView):
-    def get(self, request, pk):
-        examination = Examination.objects.get(pk=pk)
-        serializer = ExaminationSerializer(examination)
-        
-        questions = examination.question_set.all()
-        question_serializer = QuestionSerializer(questions, many=True)
-        
-        response_data = {
-            'examination': serializer.data,
-            'questions': question_serializer.data,
-        }
-        return Response(response_data)
+        questions = Question.objects.filter(examinations=examination)
+        serializer = QuestionSerializer(questions, many=True)
+        return Response(serializer.data)

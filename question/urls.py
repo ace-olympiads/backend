@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ExaminationDetailAPIView, ExaminationListAPIView, QuestionByTagView, QuestionListCreateView, QuestionRetrieveUpdateDestroyView, CommentsView, SearchAPIView, TagListAPIView
+from .views import ExaminationListAPIView, QuestionByExaminationView, QuestionByTagView, QuestionListCreateView, QuestionRetrieveUpdateDestroyView, CommentsView, SearchAPIView, TagListAPIView
 
 urlpatterns = [
     path('add/', QuestionListCreateView.as_view(), name='question-list-create'),
@@ -9,6 +9,6 @@ urlpatterns = [
     path('tag/<int:tag_id>/', QuestionByTagView.as_view(), name='question-by-tag'),
     path('tags/', TagListAPIView.as_view(), name='get-all-tags'),
     path('search/', SearchAPIView.as_view(), name='search'),
-    path('examinations/', ExaminationListAPIView.as_view(), name='examination-list'),
-    path('examinations/<int:pk>/', ExaminationDetailAPIView.as_view(), name='examination-detail'),
+    path('examination/<int:examination_id>/', QuestionByExaminationView.as_view(), name='question-by-examination'),
+    path('examinations/', ExaminationListAPIView.as_view(), name='get-all-examinations'),
 ]
