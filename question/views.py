@@ -111,14 +111,16 @@ class SearchAPIView(APIView):
             search_results = Question.objects.filter(
                 Q(question_text__icontains=query) | Q(
                     text_solution__icontains=query) | Q(
-                    text_solution_latex__icontains=query)
+                    text_solution_latex__icontains=query) | Q(
+                    question_text_latex__icontains=query)
             )
             for question in search_results:
                 result = {
                     'id': question.id,
                     'title': question.question_text,
+                    'question_latex': question.question_text_latex,
                     'solution': question.text_solution,
-                    'latex': question.text_solution_latex
+                    'solution_latex': question.text_solution_latex
                 }
                 results.append(result)
         return results
