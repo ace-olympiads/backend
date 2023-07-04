@@ -49,12 +49,14 @@ CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS = [
         "http://localhost:3000",
         "http://127.0.0.1:8000",
         "http://localhost:8000",
-        "http://photon0205.pythonanywhere.com"
+        "http://photon0205.pythonanywhere.com",
+        "http://thuglyf0205.pythonanywhere.com",
+        "https://ace-olympiads-frontend-ommanimesh2.vercel.app"
     ]
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', "photon0205.pythonanywhere.com"]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', "photon0205.pythonanywhere.com", "thuglyf0205.pythonanywhere.com", "ace-olympiads-frontend-ommanimesh2.vercel.app"]
 
 INSTALLED_APPS = [
-    'django.contrib.admin',             
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -167,6 +169,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
