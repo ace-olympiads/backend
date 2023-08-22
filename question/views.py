@@ -62,6 +62,14 @@ class QuestionRetrieveUpdateDestroyView(APIView):
         question.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class UserCommentsView(APIView):
+    serializer_class = CommentSerializer
+
+    def get(self, request, email):
+        comments = Comment.objects.select_related('commenter').filter(email=email)
+        serializer = self.serializer_class(comments, many=True)
+        return Response(serializer.data)
+    
 
 class CommentsView(APIView):
     serializer_class = CommentSerializer
@@ -71,7 +79,7 @@ class CommentsView(APIView):
             'commenter').all().filter(question=id).order_by('id')
         serializer = self.serializer_class(comments, many=True)
         return Response(serializer.data)
-
+    
     def post(self, request, format=None):
         serializer = CommentPostSerializer(data=request.data)
         if serializer.is_valid():
