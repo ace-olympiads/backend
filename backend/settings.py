@@ -21,9 +21,9 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 REST_FRAMEWORK = {
-	'DEFAULT_AUTHENTICATION_CLASSES': [
-		'rest_framework.permissions.AllowAny',
-	],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
         # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',  # django-oauth-toolkit < 1.0.0
@@ -40,10 +40,9 @@ REST_FRAMEWORK = {
 SECRET_KEY = 'django-insecure-)42=a8)toyh=7$x2@x5lyn*&%jdy4u@tbu-1v-z9trcgj)%1xu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 CORS_ALLOW_CREDENTIALS = True
-
 ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -198,5 +197,5 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.profile',
 ]
 
-#id aCNFbch4tysCnfeVKdAt761T9KCRLDlt5QZTz0Xh
-#secret 8h8ctJdTBKyPDrKvylivr6plvLU3Ex0gJXchaC5TxnIgOv9w3T45EZl0V3pgHmn8Alf8U78fpr0nT97ufQptrGzvCdKk4NYaiPPSliPKlC2D7AvAFgrYRazzXVbIccqu
+# id aCNFbch4tysCnfeVKdAt761T9KCRLDlt5QZTz0Xh
+# secret 8h8ctJdTBKyPDrKvylivr6plvLU3Ex0gJXchaC5TxnIgOv9w3T45EZl0V3pgHmn8Alf8U78fpr0nT97ufQptrGzvCdKk4NYaiPPSliPKlC2D7AvAFgrYRazzXVbIccqu

@@ -47,4 +47,21 @@ class CustomAccountCreate(APIView):
                 return Response(serialized_data, status=status.HTTP_201_CREATED)
         return Response({"error": "User does not exisits"})
         
+
+class AccountUpdateView(APIView):
+    def patch(self, request, *args, **kwargs):
+        mail = request.query_params.get('email')
+        user = Account.objects.get(email=mail)
         
+        if user is not None:
+            profile_image_url = request.data.get('profile_image_url')
+
+            if profile_image_url:
+                user.image = profile_image_url
+                user.save()
+                
+                return Response({"message": "Profile image URL updated successfully"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "No profile image URL provided"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
