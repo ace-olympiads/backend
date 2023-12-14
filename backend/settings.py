@@ -44,17 +44,7 @@ DEBUG = True
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS = [
-        "http://127.0.0.1:3000",
-        "http://localhost:3000",
-        "http://127.0.0.1:8000",
-        "http://localhost:8000",
-        "http://photon0205.pythonanywhere.com",
-        "http://thuglyf0205.pythonanywhere.com",
-        "https://ace-olympiads-frontend-ommanimesh2.vercel.app"
-    ]
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', "photon0205.pythonanywhere.com", "thuglyf0205.pythonanywhere.com", "ace-olympiads-frontend-ommanimesh2.vercel.app"]
-
+ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -126,12 +116,20 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
+    'prod': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    },
     'dev': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-DATABASES['default'] = DATABASES['dev' if DEBUG else 'production']
+DATABASES['default'] = DATABASES['dev' if DEBUG else 'prod']
 
 AUTH_USER_MODEL = 'users.NewUser'
 
