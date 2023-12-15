@@ -43,7 +43,21 @@ SECRET_KEY = 'django-insecure-)42=a8)toyh=7$x2@x5lyn*&%jdy4u@tbu-1v-z9trcgj)%1xu
 DEBUG = False
 
 CORS_ALLOW_CREDENTIALS = True
-ALLOWED_HOSTS = ["*"]
+
+CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:3000",
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "https://aceacad.com"
+    "https://backend.aceacad.com"
+    "http://photon0205.pythonanywhere.com",
+    "http://thuglyf0205.pythonanywhere.com",
+    "https://ace-olympiads-frontend-ommanimesh2.vercel.app"
+]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', "aceacad.com", "backend.aceacad.com", "photon0205.pythonanywhere.com",
+                 "thuglyf0205.pythonanywhere.com", "ace-olympiads-frontend-ommanimesh2.vercel.app"]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
