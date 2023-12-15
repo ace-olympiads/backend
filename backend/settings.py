@@ -78,7 +78,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -179,10 +180,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-
+STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -191,7 +191,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Facebook configuration
 SOCIAL_AUTH_FACEBOOK_KEY = ('599062051942492')
 SOCIAL_AUTH_FACEBOOK_SECRET = ('0d98b7e3dc33a69dab4ced881035743f')
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://localhost:3000/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://aceacad.com/'
 
 # Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
 # Email is not sent by default, to get it, you must request the email permission.

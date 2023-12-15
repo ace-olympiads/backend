@@ -3,6 +3,7 @@ db.sqlite3
 __pycache__
 venv
 env
+/static
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
