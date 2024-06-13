@@ -20,7 +20,11 @@ class Question(models.Model):
         ('P', 'Premium User'),
         ('G', 'General User'),
     )
-
+    CATEGORY_TAGS = [
+        ('Maths', 'Maths'),
+        ('Physics', 'Physics'),
+        ('Chemistry', 'Chemistry'),
+    ]
     question_text = models.CharField(max_length=200)
     question_text_latex = models.TextField(null=True, blank=True)
     video_solution_url = models.URLField(null=True, blank=True)
@@ -29,9 +33,11 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     category = models.CharField(max_length=1, choices=CATEGORY_CHOICES, default='G')
+    category_tag = models.CharField(max_length=20, choices=CATEGORY_TAGS, blank=True,null=True)
     concept = models.ForeignKey(Concept, on_delete=models.CASCADE, related_name='questions', blank=True, null=True)
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag)
+    iframeText = models.TextField(null=True, blank=True)
     examinations = models.ManyToManyField(Examination)
 
     def __str__(self):

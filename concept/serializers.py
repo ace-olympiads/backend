@@ -11,4 +11,4 @@ class ConceptSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Concept
-        fields = ['id', 'title', 'description', 'videos']
+        fields = ['id', 'title', 'description', 'videos','category']
