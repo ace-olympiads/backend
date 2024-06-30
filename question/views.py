@@ -109,7 +109,27 @@ class QuestionByTagView(APIView):
         questions = Question.objects.filter(tags=tag)
         serializer = QuestionSerializer(questions, many=True)
         return Response(serializer.data)
+    
 
+class QuestionByTagsView(APIView):
+    def post(self, request):
+        tag_ids = request.data.get('tag_ids', [])
+
+        if not tag_ids:
+            return Response({"error": "No tag IDs provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        tags = Tag.objects.filter(id__in=tag_ids)
+
+        if not tags.exists():
+            return Response({"error": "No matching tags found"}, status=status.HTTP_404_NOT_FOUND)
+
+        query = Q(tags=tags.first())
+        for tag in tags[1:]:
+            query |= Q(tags=tag)
+
+        questions = Question.objects.filter(query).distinct()
+        serializer = QuestionSerializer(questions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class SearchAPIView(APIView):
     def get(self, request):
@@ -121,18 +141,23 @@ class SearchAPIView(APIView):
         results = []
         if query:
             search_results = Question.objects.filter(
-                Q(question_text__icontains=query) | Q(
-                    text_solution__icontains=query) | Q(
-                    text_solution_latex__icontains=query) | Q(
-                    question_text_latex__icontains=query)
-            )
+                Q(question_text__icontains=query) | 
+                Q(text_solution__icontains=query) | 
+                Q(text_solution_latex__icontains=query) | 
+                Q(question_text_latex__icontains=query) |
+                Q(tags__name__icontains=query) |
+                Q(examinations__name__icontains=query)
+            ).distinct()
+            
             for question in search_results:
                 result = {
                     'id': question.id,
                     'title': question.question_text,
                     'question_latex': question.question_text_latex,
                     'solution': question.text_solution,
-                    'solution_latex': question.text_solution_latex
+                    'solution_latex': question.text_solution_latex,
+                    'tags': [{'id': tag.id, 'name': tag.name} for tag in question.tags.all()],
+                    'examinations': [{'id': exam.id, 'name': exam.name} for exam in question.examinations.all()]
                 }
                 results.append(result)
         return results

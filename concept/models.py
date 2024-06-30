@@ -18,6 +18,7 @@ class Concept(models.Model):
 class Video(models.Model):
     concept = models.ForeignKey(Concept, on_delete=models.CASCADE, related_name='videos')
     title = models.CharField(max_length=255)
+    description = models.CharField(max_length=400, blank=True, null= True)
     youtube_url = models.URLField()
     thumbnail_url = models.URLField()
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
