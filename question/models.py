@@ -27,6 +27,9 @@ class Question(models.Model):
     ]
     question_text = models.CharField(max_length=200)
     question_text_latex = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    level=models.IntegerField(null=True,blank=True)
+    title = models.CharField(max_length=200, null=True, blank=True)
     video_solution_url = models.URLField(null=True, blank=True)
     text_solution = models.TextField(null=True, blank=True)
     text_solution_latex = models.TextField(null=True, blank=True)
