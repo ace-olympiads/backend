@@ -138,7 +138,6 @@ class SearchAPIView(APIView):
         return Response(results)
 
     def search(self, query):
-        results = []
         if query:
             search_results = Question.objects.filter(
                 Q(question_text__icontains=query) | 
@@ -149,18 +148,9 @@ class SearchAPIView(APIView):
                 Q(examinations__name__icontains=query)
             ).distinct()
             
-            for question in search_results:
-                result = {
-                    'id': question.id,
-                    'title': question.question_text,
-                    'question_latex': question.question_text_latex,
-                    'solution': question.text_solution,
-                    'solution_latex': question.text_solution_latex,
-                    'tags': [{'id': tag.id, 'name': tag.name} for tag in question.tags.all()],
-                    'examinations': [{'id': exam.id, 'name': exam.name} for exam in question.examinations.all()]
-                }
-                results.append(result)
-        return results
+            serializer = QuestionSerializer(search_results, many=True)
+            return serializer.data
+        return []
 
 class ExaminationListAPIView(APIView):
     def get(self, request):
