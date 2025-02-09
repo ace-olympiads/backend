@@ -18,8 +18,11 @@ class QuestionListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        if not Account.objects.filter(id=1).exists():
+            Account.objects.create(id=1, username="Test User", email="test@example.com")
         data = request.data
         print(data)
+        data["author"] = 1
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
             question = serializer.save()
