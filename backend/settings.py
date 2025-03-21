@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'question',
     'concept',
-    'testimonials'
+    'testimonials',
+    's3_uploader'
 ]
 
 MIDDLEWARE = [
@@ -201,5 +202,9 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.profile',
 ]
 
+AWS_ACCESS_KEY_ID = 'YOUR_ACCESS_KEY_ID'  # Set in environment variable
+AWS_SECRET_ACCESS_KEY = 'YOUR_SECRET_ACCESS_KEY'  # Set in environment variable
+AWS_STORAGE_BUCKET_NAME = 'your-bucket-name'
+AWS_S3_REGION_NAME = 'us-east-1'  # Change to your region
 #id aCNFbch4tysCnfeVKdAt761T9KCRLDlt5QZTz0Xh
 #secret 8h8ctJdTBKyPDrKvylivr6plvLU3Ex0gJXchaC5TxnIgOv9w3T45EZl0V3pgHmn8Alf8U78fpr0nT97ufQptrGzvCdKk4NYaiPPSliPKlC2D7AvAFgrYRazzXVbIccqu

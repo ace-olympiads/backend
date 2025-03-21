@@ -1,14 +1,59 @@
+import uuid
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+import boto3
 from django.shortcuts import get_object_or_404
-
+from django.conf import settings
 from users.models import Account
 from .models import Examination, Question, Comment, Tag
-from .serializers import CommentPostSerializer, ExaminationSerializer, QuestionSerializer, CommentSerializer, TagSerializer
+from .serializers import CommentPostSerializer, ExaminationSerializer, QuestionSerializer, CommentSerializer, TagSerializer, ImageUploadSerializer
 from django.db.models import Q
 
+class ImageUploadView(APIView):
+    serializer_class = ImageUploadSerializer
 
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            file = serializer.validated_data["file"]
+
+            # Initialize the S3 client using boto3
+            s3 = boto3.client(
+                "s3",
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                region_name=settings.AWS_S3_REGION_NAME,
+            )
+
+            # Generate a unique filename for the uploaded file
+            file_extension = file.name.split(".")[-1]
+            filename = f"{uuid.uuid4()}.{file_extension}"
+            key = f"uploads/{filename}"
+
+            try:
+                # Upload the file to S3 with public-read ACL
+                s3.upload_fileobj(
+                    file,
+                    settings.AWS_S3_BUCKET_NAME,
+                    key,
+                    ExtraArgs={
+                        "ACL": "public-read",
+                        "ContentType": file.content_type,
+                    },
+                )
+            except Exception as e:
+                return Response(
+                    {"error": str(e)},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+            # Construct the public URL for the uploaded file
+            file_url = f"https://{settings.AWS_S3_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{key}"
+            return Response({"fileUrl": file_url}, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class QuestionListCreateView(APIView):
     serializer_class = QuestionSerializer
 

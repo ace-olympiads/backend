@@ -12,7 +12,14 @@ class ExaminationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Examination
         fields = '__all__'
-
+        
+class ImageUploadSerializer(serializers.Serializer):
+    file = serializers.ImageField()
+    def validate_file(self, value):
+        if value.size > 1024 * 1024 * 5:  # Limit to 5MB
+            raise serializers.ValidationError("Image file too large ( > 5MB ).")
+        return value
+    
 class QuestionSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, required=False)
     examinations = ExaminationSerializer(many=True, required=False)
