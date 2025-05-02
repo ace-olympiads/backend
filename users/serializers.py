@@ -1,5 +1,10 @@
 from rest_framework import serializers
-from users.models import NewUser,Account
+from users.models import ExamCard, NewUser,Account, NavbarButton, QuestionCard, VideoCard
+
+class NavbarButtonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NavbarButton
+        fields = ['id', 'name', 'display_name', 'is_enabled', 'order']
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -17,7 +22,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
-        # as long as the fields are the same, we can just use this
         instance = self.Meta.model(**validated_data)
         if password is not None:
             instance.set_password(password)
@@ -29,3 +33,19 @@ class AccountsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields ='__all__'
+
+class VideoCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VideoCard
+        fields = '__all__'
+        
+class ExamCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExamCard
+        fields = ['id', 'title', 'description', 'icon', 'width', 'height']
+        
+class QuestionCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionCard
+        fields = ['id', 'question_text', 'question_subtext', 'image', 'tabs']
+    

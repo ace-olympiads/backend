@@ -1,9 +1,46 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import CustomUserSerializer,AccountsSerializer
+from .serializers import CustomUserSerializer,AccountsSerializer, ExamCardSerializer, QuestionCardSerializer, VideoCardSerializer
 from rest_framework.permissions import AllowAny,IsAuthenticated
-from .models import Account
+from .models import Account, ExamCard, NavbarButton, QuestionCard, VideoCard
+
+class NavbarConfigView(APIView):
+    """API endpoint to fetch navbar configuration"""
+    permission_classes = [AllowAny]
+    
+    def get(self, request, *args, **kwargs):
+        buttons = NavbarButton.objects.filter(is_enabled=True).order_by('order')
+        
+        # Structure the data to match the navbar hierarchy
+        nav_structure = []
+        button_dict = {}
+        
+        # First pass: collect all buttons
+        for button in buttons:
+            button_data = {
+                'id': button.id,
+                'name': button.name,
+                'display_name': button.display_name,
+                'children': []
+            }
+            button_dict[button.id] = button_data
+            
+            # Add top-level buttons
+            if not button.parent:
+                nav_structure.append(button_data)
+        
+        # Second pass: add children
+        for button in buttons:
+            if button.parent and button.parent.id in button_dict:
+                parent = button_dict[button.parent.id]
+                parent['children'].append(button_dict[button.id])
+        
+        return Response({
+            'navbar_items': nav_structure
+        }, status=status.HTTP_200_OK)
+        
+        
 
 class CustomUserCreate(APIView):
     permission_classes = [AllowAny]
@@ -47,4 +84,39 @@ class CustomAccountCreate(APIView):
                 return Response(serialized_data, status=status.HTTP_201_CREATED)
         return Response({"error": "User does not exisits"})
         
-        
+class VideoCardList(APIView):
+    def get(self, request):
+        data = {}
+        for tab in ['Newest', 'Popular', 'Active']:
+            cards = VideoCard.objects.filter(tab=tab)
+            serializer = VideoCardSerializer(cards, many=True)
+            data[tab] = serializer.data
+        return Response(data)
+    
+class ExamCardListCreate(APIView):
+    """List all exam cards or create a new one."""
+    def get(self, request):
+        cards = ExamCard.objects.all()
+        serializer = ExamCardSerializer(cards, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ExamCardSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class QuestionCardListCreate(APIView):
+    """List all question cards or create a new one."""
+    def get(self, request):
+        cards = QuestionCard.objects.all()
+        serializer = QuestionCardSerializer(cards, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = QuestionCardSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

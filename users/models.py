@@ -33,6 +33,33 @@ class CustomAccountManager(BaseUserManager):
         user.save()
         return user
 
+class NavbarButton(models.Model):
+    """Model for managing navbar buttons visibility from admin panel"""
+    BUTTON_CHOICES = (
+        ('about', 'About'),
+        ('ace_jee', 'Ace-JEE'),
+        ('jee_mains', 'JEE Mains'),
+        ('jee_advanced', 'JEE Advanced'),
+        ('ace_neet', 'Ace-NEET'),
+    )
+    
+    name = models.CharField(max_length=50, choices=BUTTON_CHOICES, unique=True)
+    display_name = models.CharField(max_length=50)
+    is_enabled = models.BooleanField(default=True)
+    order = models.IntegerField(default=0)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,  # Specify the behavior when the parent is deleted
+        null=True,
+        blank=True,
+        related_name='children'
+    )
+    
+    def __str__(self):
+        return self.display_name
+    
+    class Meta:
+        ordering = ['order']
 
 class NewUser(AbstractBaseUser, PermissionsMixin):
 
@@ -99,3 +126,42 @@ class Account(models.Model):
     def has_module_perms(self, app_label):
         return True
     
+class VideoCard(models.Model):
+    TAB_CHOICES = [
+        ('Newest', 'Newest'),
+        ('Popular', 'Popular'),
+        ('Active', 'Active'),
+    ]
+
+    tab = models.CharField(max_length=10, choices=TAB_CHOICES)
+    title = models.CharField(max_length=200)
+    subtitle = models.CharField(max_length=200)
+    video_url = models.URLField()
+
+    def __str__(self):
+        return f"{self.tab} - {self.title}"
+    
+class ExamCard(models.Model):
+    title       = models.CharField(max_length=200)
+    description = models.TextField()
+    icon        = models.CharField(max_length=255)   # e.g. "/assets/adv.svg"
+    width       = models.PositiveIntegerField()
+    height      = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.title
+    
+class QuestionCard(models.Model):
+    TABS_CHOICES = [
+        ('JEE-Mains', 'JEE-Mains'),
+        ('JEE-Advanced', 'JEE-Advanced'),
+        ('NEET', 'NEET'),
+    ]
+
+    question_text = models.CharField(max_length=255)
+    question_subtext = models.TextField(blank=True)
+    image = models.ImageField(upload_to='question_images/')
+    tabs = models.CharField(max_length=20, choices=TABS_CHOICES)
+
+    def __str__(self):
+        return self.question_text
