@@ -63,14 +63,32 @@ class QuestionListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        if not Account.objects.filter(id=1).exists():
-            Account.objects.create(id=1, username="Test User", email="test@example.com")
         data = request.data
         print(data)
-        data["author"] = 1
+        email = data.get('email')
+        
+        if not email:
+            return Response(
+                {"error": "Author email is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        try:
+            account = Account.objects.get(email=email)
+            if account.role != 'manager':
+                return Response(
+                    {"error": "Only managers can create questions"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        except Account.DoesNotExist:
+            return Response(
+                {"error": "Account not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+            
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
-            question = serializer.save()
+            question = serializer.save(author=account)
             serialized_data = serializer.data
             serialized_data['tags'] = list(
                 question.tags.values_list('name', flat=True))
