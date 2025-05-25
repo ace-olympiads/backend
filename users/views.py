@@ -55,10 +55,9 @@ class CustomUserCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CustomAccountCreate(APIView):
-
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        
         print(request.data)
         serializer=AccountsSerializer(data=request.data)
         if serializer.is_valid():
@@ -85,6 +84,8 @@ class CustomAccountCreate(APIView):
         return Response({"error": "User does not exisits"})
         
 class VideoCardList(APIView):
+    permission_classes = [AllowAny]
+    
     def get(self, request):
         data = {}
         for tab in ['Newest', 'Popular', 'Active']:
@@ -95,6 +96,8 @@ class VideoCardList(APIView):
     
 class ExamCardListCreate(APIView):
     """List all exam cards or create a new one."""
+    permission_classes = [AllowAny]
+    
     def get(self, request):
         cards = ExamCard.objects.all()
         serializer = ExamCardSerializer(cards, many=True)
@@ -109,6 +112,8 @@ class ExamCardListCreate(APIView):
 
 class QuestionCardListCreate(APIView):
     """List all question cards or create a new one."""
+    permission_classes = [AllowAny]
+    
     def get(self, request):
         cards = QuestionCard.objects.all()
         serializer = QuestionCardSerializer(cards, many=True)

@@ -82,12 +82,10 @@ class NewUser(AbstractBaseUser, PermissionsMixin):
 
 class Account(models.Model):
     ROLES = (
-        ('A', 'Admin'),
-        ('M', 'Manager'),
-        ('P', 'Premium User'),
-        ('G', 'General User'),
+        ('common', 'Common User'),
+        ('manager', 'Manager'),
     )
-    role = models.CharField(max_length=1, choices=ROLES, default='G')
+    role = models.CharField(max_length=10, choices=ROLES, default='common')
     email = models.EmailField(verbose_name='Email Address', max_length=255, unique=True, db_index=True)
     username = models.CharField(max_length=50, verbose_name="Name")
     contact_no = models.CharField(max_length=10, verbose_name="Contact Number", default="", blank=True)
@@ -99,7 +97,7 @@ class Account(models.Model):
     provider=models.CharField(max_length=30,default='CredentialsProvider')
     provider_account_id=models.CharField(max_length=30,default="",blank=True)
     expires_at=models.IntegerField(null=True,blank=True)
-    id_token=models.CharField(default="",blank=True,max_length=30)
+    id_token=models.CharField(default="",blank=True,max_length=500)
     session_state=models.CharField(default="",blank=True,max_length=30)
     last_viewed_questions = models.ManyToManyField('question.Question', blank=True)
     last_viewed_concept_videos = models.ManyToManyField('concept.Video', blank=True)
@@ -109,13 +107,16 @@ class Account(models.Model):
         default=False,
         help_text='Designates whether the user can log into admin site.',
     )
-
     is_active = models.BooleanField(
         verbose_name='Active',
         default=True,
         help_text='Designates whether this user should be treated as active. '
                   'Unselect this instead of deleting accounts.',
     )
+    
+    # Firebase specific fields
+    firebase_uid = models.CharField(max_length=128, blank=True, null=True, unique=True)
+    refresh_token = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.email

@@ -21,16 +21,16 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 REST_FRAMEWORK = {
-	'DEFAULT_AUTHENTICATION_CLASSES': [
-		'rest_framework.permissions.AllowAny',
-	],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-
-        # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',  # django-oauth-toolkit < 1.0.0
-        # django-oauth-toolkit >= 1.0.0
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        'drf_social_oauth2.authentication.SocialAuthentication',
-    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # Keep authentication classes but make them optional
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+    'UNAUTHENTICATED_USER': None,  # This makes the user None for unauthenticated requests
+    'UNAUTHENTICATED_TOKEN': None,  # This makes the token None for unauthenticated requests
 }
 
 # Quick-start development settings - unsuitable for production
@@ -70,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    # Commented out auth middleware to disable authentication
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -208,3 +209,31 @@ AWS_STORAGE_BUCKET_NAME = 'your-bucket-name'
 AWS_S3_REGION_NAME = 'us-east-1'  # Change to your region
 #id aCNFbch4tysCnfeVKdAt761T9KCRLDlt5QZTz0Xh
 #secret 8h8ctJdTBKyPDrKvylivr6plvLU3Ex0gJXchaC5TxnIgOv9w3T45EZl0V3pgHmn8Alf8U78fpr0nT97ufQptrGzvCdKk4NYaiPPSliPKlC2D7AvAFgrYRazzXVbIccqu
+
+# Firebase configuration
+FIREBASE_WEB_API_KEY = '    '  # Replace with your Firebase Web API Key
+
+# JWT Settings
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+    'JWK_URL': None,
+    'LEEWAY': 0,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
+    'JTI_CLAIM': 'jti',
+}
