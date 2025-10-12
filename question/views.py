@@ -75,11 +75,8 @@ class QuestionListCreateView(APIView):
             
         try:
             account = Account.objects.get(email=email)
-            if account.role != 'manager':
-                return Response(
-                    {"error": "Only managers can create questions"},
-                    status=status.HTTP_403_FORBIDDEN
-                )
+            # Temporarily removed manager-only restriction
+            # Anyone can now create questions
         except Account.DoesNotExist:
             return Response(
                 {"error": "Account not found"},
