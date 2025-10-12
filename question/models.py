@@ -26,6 +26,7 @@ class Question(models.Model):
     video_solution_url = models.URLField(null=True, blank=True)
     text_solution = models.TextField(null=True, blank=True)
     text_solution_latex = models.TextField(null=True, blank=True)
+    simulation_link = models.URLField(null=True, blank=True, help_text="Optional link to simulation or interactive content")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     category = models.CharField(max_length=1, choices=CATEGORY_CHOICES, default='G')

@@ -39,13 +39,19 @@ REST_FRAMEWORK = {
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-)42=a8)toyh=7$x2@x5lyn*&%jdy4u@tbu-1v-z9trcgj)%1xu'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+
+ALLOWED_HOSTS = ["backend.aceacad.com", "localhost",]
+CSRF_TRUSTED_ORIGINS = [
+    "https://aceacad.com",
+    "https://www.aceacad.com",
+    "http://localhost:3000"
+]
 DEBUG = False
-ALLOWED_HOSTS = ["backend.aceacad.com"]
 
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
+    "https://aceacad.com","http://localhost:3000",
     "https://aceacad.com",
 ]
 
@@ -81,7 +87,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     # Commented out auth middleware to disable authentication
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -144,7 +150,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-DATABASES['default'] = DATABASES['dev' if DEBUG else 'prod']
+DATABASES['default'] = DATABASES['dev'] if DEBUG else DATABASES['prod']
 
 AUTH_USER_MODEL = 'users.NewUser'
 
@@ -190,6 +196,7 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
