@@ -39,20 +39,26 @@ REST_FRAMEWORK = {
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-)42=a8)toyh=7$x2@x5lyn*&%jdy4u@tbu-1v-z9trcgj)%1xu'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
 ALLOWED_HOSTS = ["backend.aceacad.com", "localhost",]
 CSRF_TRUSTED_ORIGINS = [
     "https://aceacad.com",
     "https://www.aceacad.com",
     "http://localhost:3000"
 ]
+DEBUG = False
 
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "https://aceacad.com","http://localhost:3000"
+    "https://aceacad.com","http://localhost:3000",
+    "https://aceacad.com",
 ]
+
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
 
 
 INSTALLED_APPS = [
@@ -185,9 +191,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
+    # ...
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
